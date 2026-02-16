@@ -1,0 +1,87 @@
+//Объявляем ПЕРЕМЕННЫЕ (минимум 2)
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$font-size-base: 16px;
+$border-radius: 8px;
+
+//Создаем МИКСИН (минимум 1)
+//Миксин для создания "карточного" эффекта с тенью
+@mixin card-shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+}
+
+//Используем ВЛОЖЕННОСТЬ селекторов
+.product-card {
+    width: 300px;
+    border: 1px solid #eee;
+    border-radius: $border-radius;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+
+    //Подключаем миксин
+    @include card-shadow;
+
+    //Вложенный селектор для изображения
+    &__image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    //Вложенный селектор для контентной части
+    &__content {
+        padding: 15px;
+    }
+
+    //Вложенный селектор для заголовка
+    &__title {
+        font-size: $font-size-base * 1.5; 
+        color: darken($primary-color, 20%); 
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    //Вложенный селектор для описания
+    &__description {
+        font-size: $font-size-base;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 8px;
+        text-align: left; // Характеристики оставляем слева
+        padding-left: 10px;
+    }
+
+    // Вложенный селектор для цены
+    &__price {
+        font-size: 24px;
+        font-weight: bold;
+        color: $primary-color;
+        margin: 15px 0;
+        text-align: center;
+        display: block;
+    }
+
+    // Вложенный селектор для кнопки
+    &__button {
+        background-color: $secondary-color; 
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: $border-radius;
+        cursor: pointer;
+        font-size: $font-size-base;
+        text-align: center;
+        display: block; 
+        width: 100%;
+
+        &:hover {
+            background-color: darken($secondary-color, 10%);
+        }
+    }
+}
