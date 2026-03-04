@@ -24,11 +24,88 @@ app.use((req, res, next) => {
     next();
 });
 
-// Начальные данные
-let users = [
-    { id: nanoid(6), name: 'Петр', age: 16 },
-    { id: nanoid(6), name: 'Иван', age: 18 },
-    { id: nanoid(6), name: 'Дарья', age: 20 },
+// Начальные данные (10 товаров)
+let products = [
+    { 
+        id: nanoid(6), 
+        name: 'Смартфон X100', 
+        category: 'Электроника',
+        description: '6.5 дюймов дисплей, 128GB памяти, камера 48MP',
+        price: 24999,
+        stock: 15
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Ноутбук ProBook 15', 
+        category: 'Компьютеры',
+        description: 'Intel i5, 16GB RAM, 512GB SSD',
+        price: 54999,
+        stock: 8
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Наушники AirSound', 
+        category: 'Аксессуары',
+        description: 'Беспроводные, шумоподавление, 20ч работы',
+        price: 3999,
+        stock: 25
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Кофемашина EspressoPro', 
+        category: 'Для дома',
+        description: 'Автоматическая, 15 бар, капучинатор',
+        price: 18999,
+        stock: 5
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Фитнес-браслет ActiveBand', 
+        category: 'Гаджеты',
+        description: 'Шагомер, пульсометр, сон, 7 дней работы',
+        price: 2499,
+        stock: 30
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Планшет Tab M10', 
+        category: 'Электроника',
+        description: '10 дюймов экран, 64GB, 4G LTE',
+        price: 15999,
+        stock: 12
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Умные часы Watch 5', 
+        category: 'Гаджеты',
+        description: 'GPS, NFC, пульсометр, водозащита',
+        price: 12999,
+        stock: 7
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Игровая мышь X-Treme', 
+        category: 'Компьютеры',
+        description: 'RGB, 16000 DPI, 6 кнопок',
+        price: 2499,
+        stock: 20
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Внешний диск 1TB', 
+        category: 'Комплектующие',
+        description: 'USB 3.0, металлический корпус',
+        price: 4499,
+        stock: 18
+    },
+    { 
+        id: nanoid(6), 
+        name: 'Робот-пылесос CleanBot', 
+        category: 'Для дома',
+        description: 'Автоматическая уборка, управление со смартфона',
+        price: 21999,
+        stock: 4
+    }
 ];
 
 /**
@@ -38,9 +115,9 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'API управления пользователями',
+            title: 'API интернет-магазина',
             version: '1.0.0',
-            description: 'Простое REST API для управления пользователями с полной документацией Swagger',
+            description: 'REST API для управления товарами интернет-магазина',
             contact: {
                 name: 'Разработчик',
                 email: 'developer@example.com'
@@ -54,8 +131,8 @@ const swaggerOptions = {
         ],
         tags: [
             {
-                name: 'Users',
-                description: 'Управление пользователями'
+                name: 'Products',
+                description: 'Управление товарами'
             }
         ]
     },
@@ -69,7 +146,7 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     explorer: true,
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'User API Documentation'
+    customSiteTitle: 'Products API Documentation'
 }));
 
 // Корневой маршрут - редирект на документацию
@@ -81,48 +158,73 @@ app.get('/', (req, res) => {
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     Product:
  *       type: object
  *       required:
  *         - name
- *         - age
+ *         - category
+ *         - description
+ *         - price
+ *         - stock
  *       properties:
  *         id:
  *           type: string
- *           description: Уникальный идентификатор пользователя (генерируется автоматически)
+ *           description: Уникальный идентификатор товара (генерируется автоматически)
  *           example: "abc123"
  *         name:
  *           type: string
- *           description: Имя пользователя
- *           example: "Иван Петров"
- *         age:
- *           type: integer
- *           description: Возраст пользователя
+ *           description: Название товара
+ *           example: "Смартфон X100"
+ *         category:
+ *           type: string
+ *           description: Категория товара
+ *           example: "Электроника"
+ *         description:
+ *           type: string
+ *           description: Описание товара
+ *           example: "6.5 дюймов дисплей, 128GB памяти, камера 48MP"
+ *         price:
+ *           type: number
+ *           description: Цена товара в рублях
  *           minimum: 0
- *           maximum: 150
- *           example: 25
+ *           example: 24999
+ *         stock:
+ *           type: integer
+ *           description: Количество товара на складе
+ *           minimum: 0
+ *           example: 15
  *     Error:
  *       type: object
  *       properties:
  *         error:
  *           type: string
  *           description: Сообщение об ошибке
- *           example: "Пользователь не найден"
+ *           example: "Товар не найден"
  */
 
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: API для управления пользователями
+ *   name: Products
+ *   description: API для управления товарами интернет-магазина
  */
+
+// Функция-помощник для поиска товара
+function findProductOr404(id, res) {
+    const product = products.find(p => p.id === id);
+    if (!product) {
+        res.status(404).json({ error: "Товар не найден" });
+        return null;
+    }
+    return product;
+}
 
 /**
  * @swagger
- * /api/users:
+ * /api/products:
  *   post:
- *     summary: Создает нового пользователя
- *     tags: [Users]
+ *     summary: Создает новый товар
+ *     tags: [Products]
  *     requestBody:
  *       required: true
  *       content:
@@ -131,23 +233,38 @@ app.get('/', (req, res) => {
  *             type: object
  *             required:
  *               - name
- *               - age
+ *               - category
+ *               - description
+ *               - price
+ *               - stock
  *             properties:
  *               name:
  *                 type: string
- *                 description: Имя пользователя
- *                 example: "Анна Смирнова"
- *               age:
+ *                 description: Название товара
+ *                 example: "Игровая консоль PlayBox"
+ *               category:
+ *                 type: string
+ *                 description: Категория товара
+ *                 example: "Электроника"
+ *               description:
+ *                 type: string
+ *                 description: Описание товара
+ *                 example: "1TB SSD, 2 геймпада, 3 игры в подарок"
+ *               price:
+ *                 type: number
+ *                 description: Цена товара
+ *                 example: 45999
+ *               stock:
  *                 type: integer
- *                 description: Возраст пользователя
- *                 example: 22
+ *                 description: Количество на складе
+ *                 example: 10
  *     responses:
  *       201:
- *         description: Пользователь успешно создан
+ *         description: Товар успешно создан
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Product'
  *       400:
  *         description: Неверные данные запроса
  *         content:
@@ -155,95 +272,96 @@ app.get('/', (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-app.post('/api/users', (req, res) => {
-    const { name, age } = req.body;
+app.post('/api/products', (req, res) => {
+    const { name, category, description, price, stock } = req.body;
     
-    if (!name || !age) {
-        return res.status(400).json({ error: 'Необходимо указать имя и возраст' });
+    // Валидация
+    if (!name || !category || !description || price === undefined || stock === undefined) {
+        return res.status(400).json({ error: 'Необходимо заполнить все поля' });
     }
     
-    const newUser = {
+    const newProduct = {
         id: nanoid(6),
         name: name.trim(),
-        age: Number(age),
+        category: category.trim(),
+        description: description.trim(),
+        price: Number(price),
+        stock: Number(stock),
     };
     
-    users.push(newUser);
-    res.status(201).json(newUser);
+    products.push(newProduct);
+    res.status(201).json(newProduct);
 });
 
 /**
  * @swagger
- * /api/users:
+ * /api/products:
  *   get:
- *     summary: Возвращает список всех пользователей
- *     tags: [Users]
+ *     summary: Возвращает список всех товаров
+ *     tags: [Products]
  *     responses:
  *       200:
- *         description: Список пользователей
+ *         description: Список товаров
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Product'
  */
-app.get('/api/users', (req, res) => {
-    res.json(users);
+app.get('/api/products', (req, res) => {
+    res.json(products);
 });
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/products/{id}:
  *   get:
- *     summary: Получает пользователя по ID
- *     tags: [Users]
+ *     summary: Получает товар по ID
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID пользователя
+ *         description: ID товара
  *         example: "abc123"
  *     responses:
  *       200:
- *         description: Данные пользователя
+ *         description: Данные товара
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Product'
  *       404:
- *         description: Пользователь не найден
+ *         description: Товар не найден
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-app.get('/api/users/:id', (req, res) => {
+app.get('/api/products/:id', (req, res) => {
     const id = req.params.id;
-    const user = users.find(u => u.id === id);
+    const product = findProductOr404(id, res);
+    if (!product) return;
     
-    if (!user) {
-        return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-    
-    res.json(user);
+    res.json(product);
 });
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/products/{id}:
  *   patch:
- *     summary: Обновляет данные пользователя
- *     tags: [Users]
+ *     summary: Обновляет данные товара
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID пользователя
+ *         description: ID товара
  *         example: "abc123"
  *     requestBody:
  *       required: true
@@ -254,19 +372,31 @@ app.get('/api/users/:id', (req, res) => {
  *             properties:
  *               name:
  *                 type: string
- *                 description: Новое имя пользователя
- *                 example: "Петр Сидоров"
- *               age:
+ *                 description: Новое название товара
+ *                 example: "Смартфон X100 Pro"
+ *               category:
+ *                 type: string
+ *                 description: Новая категория
+ *                 example: "Электроника"
+ *               description:
+ *                 type: string
+ *                 description: Новое описание
+ *                 example: "6.7 дюймов AMOLED, 256GB, камера 108MP"
+ *               price:
+ *                 type: number
+ *                 description: Новая цена
+ *                 example: 29999
+ *               stock:
  *                 type: integer
- *                 description: Новый возраст пользователя
- *                 example: 26
+ *                 description: Новое количество на складе
+ *                 example: 12
  *     responses:
  *       200:
- *         description: Пользователь успешно обновлен
+ *         description: Товар успешно обновлен
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/Product'
  *       400:
  *         description: Нет данных для обновления
  *         content:
@@ -274,65 +404,66 @@ app.get('/api/users/:id', (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Пользователь не найден
+ *         description: Товар не найден
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-app.patch('/api/users/:id', (req, res) => {
+app.patch('/api/products/:id', (req, res) => {
     const id = req.params.id;
-    const user = users.find(u => u.id === id);
+    const product = findProductOr404(id, res);
+    if (!product) return;
     
-    if (!user) {
-        return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-    
-    if (!req.body || (req.body.name === undefined && req.body.age === undefined)) {
+    // Проверяем, есть ли что обновлять
+    if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ error: 'Нет данных для обновления' });
     }
     
-    const { name, age } = req.body;
+    const { name, category, description, price, stock } = req.body;
     
-    if (name !== undefined) user.name = name.trim();
-    if (age !== undefined) user.age = Number(age);
+    if (name !== undefined) product.name = name.trim();
+    if (category !== undefined) product.category = category.trim();
+    if (description !== undefined) product.description = description.trim();
+    if (price !== undefined) product.price = Number(price);
+    if (stock !== undefined) product.stock = Number(stock);
     
-    res.json(user);
+    res.json(product);
 });
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/products/{id}:
  *   delete:
- *     summary: Удаляет пользователя
- *     tags: [Users]
+ *     summary: Удаляет товар
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: ID пользователя
+ *         description: ID товара
  *         example: "abc123"
  *     responses:
  *       204:
- *         description: Пользователь успешно удален (нет тела ответа)
+ *         description: Товар успешно удален (нет тела ответа)
  *       404:
- *         description: Пользователь не найден
+ *         description: Товар не найден
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-app.delete('/api/users/:id', (req, res) => {
+app.delete('/api/products/:id', (req, res) => {
     const id = req.params.id;
-    const exists = users.some(u => u.id === id);
+    const exists = products.some(p => p.id === id);
     
     if (!exists) {
-        return res.status(404).json({ error: 'Пользователь не найден' });
+        return res.status(404).json({ error: 'Товар не найден' });
     }
     
-    users = users.filter(u => u.id !== id);
+    products = products.filter(p => p.id !== id);
     res.status(204).send();
 });
 
@@ -352,9 +483,9 @@ app.listen(port, () => {
     console.log(` Сервер запущен на http://localhost:${port}`);
     console.log(` Документация Swagger: http://localhost:${port}/api-docs`);
     console.log(` Доступные маршруты:`);
-    console.log(`   GET    /api/users - все пользователи`);
-    console.log(`   GET    /api/users/:id - пользователь по ID`);
-    console.log(`   POST   /api/users - создать пользователя`);
-    console.log(`   PATCH  /api/users/:id - обновить пользователя`);
-    console.log(`   DELETE /api/users/:id - удалить пользователя`);
+    console.log(`   GET    /api/products - все товары`);
+    console.log(`   GET    /api/products/:id - товар по ID`);
+    console.log(`   POST   /api/products - создать товар`);
+    console.log(`   PATCH  /api/products/:id - обновить товар`);
+    console.log(`   DELETE /api/products/:id - удалить товар`);
 });
